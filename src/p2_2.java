@@ -3,77 +3,50 @@ import java.util.Scanner;
 
 public class p2_2 {
     public static void main(String[] args) {
-        // WARNING: Worst solution to the problem ever, don't even try to understand it
-        // I promise I'll do better code tomorrow
-        // Stop scrolling if you want to preserve your vision
-
         Scanner sc = new Scanner(System.in);
-
         int safeCount = 0;
 
         while (sc.hasNext()) {
-            String line = sc.nextLine();
-            if (line.equals("a")) break;
+            // Get a line of integers
+            String parts[] = sc.nextLine().split(" ");
+            int arr[] = new int[parts.length];
 
-            boolean someSafe = false;
-
-            // Generate an ArrayList of string variations of the line
-            ArrayList<String> variations = new ArrayList<>();
-            variations.add(line);
-            String splitArr[] = line.split(" ");
-
-            for (int i = 0; i < splitArr.length; i++) {
-                StringBuffer var = new StringBuffer();
-
-                for (int j = 0; j < splitArr.length; j++) {
-                    if (i != j) {
-                        var.append(splitArr[j] + " ");
-                    }
-                }
-
-                variations.add(var.toString());
+            for (int i = 0; i < parts.length; i++) {
+                arr[i] = Integer.parseInt(parts[i]);
             }
 
-            for (String modLine : variations) {
-                Scanner ls = new Scanner(modLine);
-                Boolean increasing = null;
-                int prev = ls.nextInt();
-                boolean safe = true;
+            // Try generating arrays without just one of their elements and check if they are safe
+            for (int i = 0; i < arr.length; i++) {
+                ArrayList<Integer> modArr = new ArrayList<>(arr.length - 1);
 
-                while (ls.hasNextInt()) {
-                    int n = ls.nextInt();
-                    int sub = n - prev;
-                    prev = n;
-
-                    if (increasing == null) {
-                        increasing = sub > 0;
-                    }
-
-                    if (Math.abs(sub) < 1 || Math.abs(sub) > 3) {
-                        safe = false;
-                        break;
-                    }
-
-                    if (increasing) {
-                        if (sub < 0) {
-                            safe = false;
-                            break;
-                        }
-                    } else {
-                        if (sub > 0) {
-                            safe = false;
-                            break;
-                        }
+                for (int j = 0; j < arr.length; j++) {
+                    if (i != j) {
+                        modArr.add(arr[j]);
                     }
                 }
 
-                if (safe) {
-                    someSafe = true;
+                int j;
+                boolean increasing = modArr.get(1) - modArr.get(0) > 0;
+
+                for (j = 1; j < modArr.size(); j++) {
+                    int sub = modArr.get(j) - modArr.get(j - 1);
+                    int diff = Math.abs(sub);
+
+                    // Check if the difference is in the range [1, 3]
+                    if (diff < 1 || diff > 3) break;
+
+                    // Check if the array continues to be increasing / decreasing
+                    if (increasing && sub < 0 || !increasing && sub > 0) break;
+                }
+
+                if (j == modArr.size()) {
+                    // The loop finished, so the line is safe
+                    safeCount++;
+                    // Break ot ouf the loop, as we know this line is safe and don't need
+                    // to continue generating more arrays with one element removed
                     break;
                 }
             }
-
-            if (someSafe) safeCount++;
         }
 
         System.out.println(safeCount);
