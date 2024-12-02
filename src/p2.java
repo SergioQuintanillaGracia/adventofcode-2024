@@ -1,35 +1,55 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class p2 {
     public static void main(String[] args) {
+        // WARNING: Worst solution to the problem ever, don't even try to understand it
+        // I promise I'll do better code tomorrow
+        // Stop scrolling if you want to preserve your vision
+
         Scanner sc = new Scanner(System.in);
-        ArrayList<Integer> a1 = new ArrayList<>();
-        ArrayList<Integer> a2 = new ArrayList<>();
+
+        int safeCount = 0;
 
         while (sc.hasNext()) {
-            int i1 = sc.nextInt();
-            if (i1 == -1) break;
+            String line = sc.nextLine();
+            if (line.equals("a")) break;
 
-            a1.add(i1);
-            a2.add(sc.nextInt());
-        }
+            Scanner ls = new Scanner(line);
+            Boolean increasing = null;
+            int prev = ls.nextInt();
 
-        long similarity = 0;
+            boolean safe = true;
 
-        for (int i : a1) {
-            for (int j : a2) {
-                int times = 0;
+            while (ls.hasNextInt()) {
+                int n = ls.nextInt();
+                int sub = n - prev;
+                prev = n;
 
-                if (i == j) {
-                    times++;
+                if (increasing == null) {
+                    increasing = sub > 0;
                 }
 
-                similarity += i * times;
+                if (Math.abs(sub) < 1 || Math.abs(sub) > 3) {
+                    safe = false;
+                    break;
+                }
+
+                if (increasing) {
+                    if (sub < 0) {
+                        safe = false;
+                        break;
+                    }
+                } else {
+                    if (sub > 0) {
+                        safe = false;
+                        break;
+                    }
+                }
             }
+
+            if (safe) safeCount++;
         }
 
-        System.out.println(similarity);
+        System.out.println(safeCount);
     }
 }
